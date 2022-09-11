@@ -1,0 +1,31 @@
+trigger: none
+pr: none
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+  workingDir: 'myDir'
+
+jobs:
+- job: 'run_puppeteer'
+  displayName: 'Run Puppeteer'
+  steps:
+  - task: NodeTool@0
+    inputs:
+      versionSpec: '18.x'
+      checkLatest: true
+    displayName: 'Install Node.js'
+
+  - script: npm i puppeteer
+    workingDirectory: '$(Build.SourcesDirectory)/$(workingDir)'
+    displayName: 'Install Puppeteer'
+
+  - script: |
+      Xvfb :10 -ac &
+    displayName: 'Set display'
+
+  - script: node main.js
+    workingDirectory: '$(Build.SourcesDirectory)/$(workingDir)'
+    displayName: 'Run main.js'
+    failOnStderr: true
